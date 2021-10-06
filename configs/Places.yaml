@@ -1,0 +1,61 @@
+NAME: 'LDA.Places.res152.90epoch'
+OUTPUT_DIR: './output/LDA/Places'
+SHOW_STEP: 50
+SAVE_STEP: 30
+VALID_STEP: 1
+INPUT_SIZE: (224, 224)
+COLOR_SPACE: 'RGB'
+CPU_MODE: False
+
+DATASET:
+  ROOT: '~/Dataset/Places_LT'
+  DATASET: 'Places2'
+  DATA_TYPE: 'JPEG'
+  TRAIN_JSON: 'datasets/Places_LT/Places_LT_train.txt'
+  VALID_JSON: 'datasets/Places_LT/Places_LT_val.txt'
+  ALPHA: -1.
+
+BACKBONE:
+  TYPE: 'res152'
+  FREEZE: True
+  REFEEZE_LAST_BLOCK: True
+  PRETRAINED_MODEL: '~/.cache/torch/checkpoints/resnet152-b121ed2d.pth'
+
+MODULE:
+  TYPE: 'GAP'
+
+LOSS:
+  LOSS_TYPE: 'CrossEntropy'
+
+CLASSIFIER:
+  TYPE: 'LDA'
+  BIAS: True
+  
+TRAIN:
+  BATCH_SIZE: 256
+  MAX_EPOCH: 90
+  NUM_WORKERS: 16
+  TENSORBOARD:
+    ENABLE: False
+  SAMPLER:
+    TYPE: 'default'
+    DUAL_SAMPLER:
+      ENABLE: False
+  OPTIMIZER:
+    TYPE: 'SGD'
+    BASE_LR: 0.1
+    MOMENTUM: 0.9
+    WEIGHT_DECAY: 5e-4
+  LR_SCHEDULER:
+    TYPE: 'warmupcosine'
+    COSINE_DECAY_END: 0
+
+TRANSFORMS:
+  TRAIN_TRANSFORMS: ("random_resized_crop", "random_horizontal_flip", "color_jitter")
+  TEST_TRANSFORMS: ("shorter_resize_for_crop", "center_crop")
+
+TEST:
+  BATCH_SIZE: 128
+  NUM_WORKERS: 16
+  MODEL_FILE: 'best_model.pth'
+

@@ -1,0 +1,59 @@
+NAME: 'LDA.ImageNet.resnext50.90epoch'
+OUTPUT_DIR: './output/LDA/ImageNet'
+SHOW_STEP: 50
+SAVE_STEP: 1
+VALID_STEP: 1
+INPUT_SIZE: (224, 224)
+COLOR_SPACE: 'RGB'
+CPU_MODE: False
+
+DATASET:
+  ROOT: '~/Dataset/ImageNet_ILSVRC2012/'
+  DATASET: 'ImageNet'
+  DATA_TYPE: 'JPEG'
+  TRAIN_JSON: 'datasets/ImageNet_LT/ImageNet_LT_train.txt'
+  VALID_JSON: 'datasets/ImageNet_LT/ImageNet_LT_val.txt'
+
+AUTO_ALPHA:
+  LENGTH: 100
+  GAMMA: 2.0
+
+BACKBONE:
+  TYPE: 'resnext50'
+
+MODULE:
+  TYPE: 'GAP'
+
+LOSS:
+  LOSS_TYPE: 'CrossEntropy'
+
+CLASSIFIER:
+  TYPE: 'LDA'
+  BIAS: True
+  NECK:
+    ENABLE: True
+
+TRAIN:
+  BATCH_SIZE: 256
+  MAX_EPOCH: 90
+  NUM_WORKERS: 16
+  TENSORBOARD:
+    ENABLE: False
+  OPTIMIZER:
+    TYPE: 'SGD'
+    BASE_LR: 0.1
+    MOMENTUM: 0.9
+    WEIGHT_DECAY: 5e-4
+  LR_SCHEDULER:
+    TYPE: 'warmupcosine'
+    COSINE_DECAY_END: 0
+
+TRANSFORMS:
+  TRAIN_TRANSFORMS: ("random_resized_crop", "random_horizontal_flip", "color_jitter")
+  TEST_TRANSFORMS: ("shorter_resize_for_crop", "center_crop")
+
+TEST:
+  BATCH_SIZE: 256
+  NUM_WORKERS: 16
+  MODEL_FILE: 'best_model.pth'
+
